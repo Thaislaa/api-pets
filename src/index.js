@@ -3,6 +3,7 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import { pets } from "./dados.js";
 import { randomUUID } from "crypto";
+import { verificaIdExisteste, verificaCamposValidos } from "./middlewares.js";
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ app.get("/pets", (req, res) => {
 });
 
 // GET /pets/:id -> Lista pets por id
-app.get("/pets/:id", (req, res) => {
+app.get("/pets/:id", [verificaIdExisteste], (req, res) => {
     try {
         const { id } = req.params;
 
@@ -47,7 +48,7 @@ app.get("/pets/:id", (req, res) => {
 })
 
 // POST /pets -> Cria pet
-app.post("/pets", (req, res) => {
+app.post("/pets", [verificaCamposValidos], (req, res) => {
     try {
         const { nome, raca, idade, tutor } = req.body;
 
@@ -75,7 +76,7 @@ app.post("/pets", (req, res) => {
 });
 
 // PUT /pets/:id -> Edita pet
-app.put("/pets/:id", (req, res) => {
+app.put("/pets/:id", [verificaIdExisteste, verificaCamposValidos], (req, res) => {
     try {
         const { id } = req.params;
         const { nome, raca, idade, tutor } = req.body;
@@ -100,7 +101,7 @@ app.put("/pets/:id", (req, res) => {
 });
 
 // DELETE /pets/:id -> Exclui pet
-app.delete("/pets/:id", (req, res) => {
+app.delete("/pets/:id", [verificaIdExisteste], (req, res) => {
     try {
         const { id } = req.params;
 
