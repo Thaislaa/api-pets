@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// GET /pets - Lista pets
+// GET /pets -> Lista pets
 app.get("/pets", (req, res) => {
     try {
         res.status(200).send({
@@ -26,22 +26,91 @@ app.get("/pets", (req, res) => {
     }
 });
 
-// POST /pets - Cria pet
+// GET /pets/:id -> Lista pets por id
+app.get("/pets/:id", (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const pet = pets.find((pet) => pet.id === id);
+
+        res.status(200).send({
+            ok: true,
+            mensagem: "Pet encontrado com sucesso!",
+            dados: pet
+        });
+    } catch (error) {
+        res.status(500).send({
+            ok: false,
+            mensagem: error.toString()
+        });
+    }
+})
+
+// POST /pets -> Cria pet
 app.post("/pets", (req, res) => {
     try {
-        const body = req.body;
+        const { nome, raca, idade, tutor } = req.body;
+
         const novoPet = ({
             id: randomUUID(),
-            nome: body.nome,
-            raca: body.raca,
-            idade: body.idade,
-            tutor: body.tutor,
+            nome: nome,
+            raca: raca,
+            idade: idade,
+            tutor: tutor,
         });
+
         pets.push(novoPet);
+
         res.status(201).send({
             ok: true,
             mensagem: "Pet criado com sucesso!",
             dados: novoPet
+        });
+    } catch (error) {
+        res.status(500).send({
+            ok: false,
+            mensagem: error.toString()
+        });
+    }
+});
+
+// PUT /pets/:id -> Edita pet
+app.put("/pets/:id", (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nome, raca, idade, tutor } = req.body;
+
+        const pet = pets.find((pet) => pet.id === id);
+        pet.nome = nome;
+        pet.raca = raca;
+        pet.idade = idade;
+        pet.tutor = tutor;
+
+        res.status(200).send({
+            ok: true,
+            mensagem: "Pet atualizado com sucesso!",
+            dados: pet
+        });
+    } catch (error) {
+        res.status(500).send({
+            ok: false,
+            mensagem: error.toString()
+        });
+    }
+});
+
+// DELETE /pets/:id -> Exclui pet
+app.delete("/pets/:id", (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const Indexpet = pets.findIndex((pet) => pet.id === id);
+        pets.splice(Indexpet, 1);
+
+        res.status(200).send({
+            ok: true,
+            mensagem: "Pet excluído com sucesso.",
+            dados: pets
         });
     } catch (error) {
         res.status(500).send({
