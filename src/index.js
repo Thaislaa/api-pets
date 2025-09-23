@@ -14,10 +14,33 @@ app.use(cors());
 // GET /pets -> Lista pets
 app.get("/pets", (req, res) => {
     try {
+        let infos = pets;
+        let {nome, tutor_includes, raca, idade, tutor} = req.query;
+        
+        if (nome) {
+            infos = infos.filter((info) => info.nome === nome);
+        }
+
+        if (tutor_includes) {
+            infos = infos.filter((info) => info.tutor.includes(tutor_includes));
+        }
+
+        if (raca){
+            infos = infos.filter((info) => info.raca === raca);
+        }
+
+        if (idade){
+            infos = infos.filter((info) => info.idade == Number(idade));
+        }
+
+        if (tutor){
+            infos = infos.filter((info) => info.tutor === tutor);
+        }
+        
         res.status(200).send({
             ok: true,
             mensagem: "Pets listados com sucesso!",
-            dados: pets
+            dados: infos
         });
     } catch (error) {
         res.status(500).send({
